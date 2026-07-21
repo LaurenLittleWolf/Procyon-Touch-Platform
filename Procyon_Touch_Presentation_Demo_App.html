@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Procyon Touch | Presentation App</title>
+  <style>
+:root {
+  --ink: #11202b;
+  --muted: #66727f;
+  --paper: #fbf7ef;
+  --cream: #fffdf8;
+  --line: rgba(17, 32, 43, 0.12);
+  --navy: #0b1722;
+  --blue: #1c415f;
+  --gold: #d9a441;
+  --gold-soft: #f3d58c;
+  --sage: #78947d;
+  --rose: #b76e79;
+  --shadow: 0 24px 70px rgba(10, 23, 34, 0.16);
+  --radius-xl: 32px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(217, 164, 65, 0.28), transparent 28rem),
+    radial-gradient(circle at top right, rgba(120, 148, 125, 0.22), transparent 24rem),
+    linear-gradient(180deg, #fffaf0 0%, #f8efe1 48%, #eef2ef 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(17, 32, 43, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 32, 43, 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.45), transparent 70%);
+}
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select, textarea { font: inherit; }
+
+.page-shell { min-height: 100vh; }
+
+.hero {
+  min-height: 92vh;
+  padding: 24px min(5vw, 64px) 72px;
+  color: #fdf7ec;
+  background:
+    linear-gradient(135deg, rgba(11, 23, 34, 0.94), rgba(28, 65, 95, 0.84)),
+    radial-gradient(circle at 80% 20%, rgba(217, 164, 65, 0.38), transparent 25rem),
+    linear-gradient(135deg, #0b1722, #1c415f);
+  border-bottom-left-radius: 48px;
+  border-bottom-right-radius: 48px;
+  box-shadow: 0 30px 90px rgba(11, 23, 34, 0.3);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1220px;
+  margin: 0 auto 64px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-size: 1.22rem;
+}
+
+.brand-symbol {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  color: #101820;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  box-shadow: 0 10px 30px rgba(217, 164, 65, 0.35);
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav-links a {
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  color: rgba(255,255,255,0.82);
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(16px);
+}
+
+.hero-grid {
+  max-width: 1220px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(380px, 0.92fr);
+  gap: 52px;
+  align-items: center;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+h1, h2, h3 { margin: 0; letter-spacing: -0.045em; }
+
+h1 {
+  max-width: 820px;
+  font-size: clamp(3rem, 7vw, 6.8rem);
+  line-height: 0.9;
+}
+
+h2 { font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1; }
+
+h3 { font-size: 1.24rem; }
+
+.hero-copy {
+  max-width: 760px;
+  color: rgba(255,255,255,0.78);
+  font-size: 1.22rem;
+  line-height: 1.7;
+  margin: 28px 0;
+}
+
+.hero-actions, .dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.button:hover { transform: translateY(-1px); }
+
+.button.primary {
+  color: #10202c;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  box-shadow: 0 16px 36px rgba(217, 164, 65, 0.28);
+}
+
+.button.secondary {
+  color: var(--ink);
+  background: #ffffff;
+  border-color: var(--line);
+}
+
+.button.ghost {
+  color: #fff7e7;
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+}
+
+.button.danger {
+  color: #fff;
+  background: #a3454f;
+}
+
+.hero-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.hero-metrics span {
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: rgba(255,255,255,0.82);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.hero-metrics strong { color: #fff; }
+
+.product-preview {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+  box-shadow: 0 34px 100px rgba(0,0,0,0.34);
+  backdrop-filter: blur(28px);
+}
+
+.product-preview::before {
+  content: "";
+  position: absolute;
+  inset: -45% auto auto -30%;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 164, 65, 0.33), transparent 65%);
+}
+
+.preview-topline { display: flex; gap: 8px; margin-bottom: 18px; position: relative; }
+.preview-topline span { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.42); }
+
+.preview-panel, .preview-card, .pathway {
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(8, 21, 31, 0.55);
+  border-radius: 24px;
+}
+
+.main-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  min-height: 178px;
+}
+
+.main-panel h2 { color: #fff; font-size: 2.1rem; }
+.mini-label { margin: 0 0 8px; color: var(--gold-soft); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 900; }
+.score-orb { display: grid; place-items: center; width: 112px; height: 112px; border-radius: 50%; color: #10202c; background: linear-gradient(135deg, #fff8e5, var(--gold)); font-size: 2.4rem; font-weight: 950; box-shadow: 0 20px 42px rgba(217, 164, 65, 0.32); }
+.preview-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+.preview-card { padding: 18px; color: rgba(255,255,255,0.88); }
+.preview-card strong { display: block; color: #fff; margin-bottom: 6px; }
+.preview-card span { color: rgba(255,255,255,0.68); }
+.pathway { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; overflow: hidden; }
+.pathway span { padding: 14px 8px; text-align: center; color: rgba(255,255,255,0.82); background: rgba(255,255,255,0.06); font-weight: 800; }
+
+.section { max-width: 1220px; margin: 0 auto; padding: 74px min(5vw, 40px); }
+.statement { padding-top: 52px; }
+.statement-card { padding: 34px; border-radius: var(--radius-xl); background: #fff; box-shadow: var(--shadow); border: 1px solid var(--line); }
+.statement-card p:last-child { max-width: 880px; color: var(--muted); line-height: 1.7; }
+.section-heading { margin-bottom: 26px; }
+.section-heading.centered { text-align: center; max-width: 780px; margin-left: auto; margin-right: auto; }
+.section-heading p { color: var(--muted); font-size: 1.04rem; line-height: 1.6; }
+.row-heading { display: flex; justify-content: space-between; gap: 24px; align-items: end; }
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.steps article, .card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: rgba(255,255,255,0.78); box-shadow: var(--shadow); }
+.steps article { padding: 26px; }
+.step-number { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: var(--ink); color: #fff; font-weight: 900; margin-bottom: 18px; }
+.steps p, .card p, label, legend { color: var(--muted); line-height: 1.55; }
+.card { padding: 26px; }
+
+.form-card { background: rgba(255,255,255,0.86); }
+.grid { display: grid; gap: 16px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.compact { gap: 8px 16px; }
+label { display: grid; gap: 8px; font-weight: 800; color: var(--ink); }
+input, select, textarea { width: 100%; border: 1px solid rgba(17, 32, 43, 0.16); background: #fffef9; color: var(--ink); padding: 13px 14px; border-radius: 14px; outline: none; }
+textarea { resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.18); }
+fieldset { margin: 22px 0; padding: 18px; border: 1px solid var(--line); border-radius: 18px; }
+legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chips label, .check { display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 999px; color: var(--ink); background: #fff; border: 1px solid var(--line); font-weight: 800; }
+.chips input, .check input { width: auto; }
+
+.dashboard { padding-bottom: 40px; }
+.dashboard-grid { align-items: start; }
+.record-list, .match-list { display: grid; gap: 14px; }
+.empty { padding: 18px; color: var(--muted); background: rgba(17,32,43,0.04); border-radius: 16px; border: 1px dashed var(--line); }
+.record, .match-result { padding: 16px; border-radius: 18px; background: #fffef9; border: 1px solid var(--line); }
+.record header, .match-result header, .match-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.record strong, .match-result strong { color: var(--ink); }
+.meta { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; }
+.delete-button { width: 32px; height: 32px; border-radius: 50%; border: 0; color: #fff; background: #a3454f; cursor: pointer; font-weight: 900; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tag { padding: 7px 10px; border-radius: 999px; color: #1f3a2b; background: rgba(120, 148, 125, 0.16); font-size: 0.8rem; font-weight: 900; }
+.score { flex: 0 0 auto; padding: 11px 14px; border-radius: 999px; color: #10202c; background: linear-gradient(135deg, var(--gold-soft), var(--gold)); font-weight: 950; }
+.reasons { margin: 12px 0 0; padding-left: 20px; color: var(--muted); }
+.reasons li { margin: 6px 0; }
+.warning { padding-top: 28px; }
+.warning h2 { font-size: 1.9rem; }
+.warning p { padding: 22px; border-left: 5px solid var(--gold); background: rgba(255,255,255,0.75); border-radius: 0 18px 18px 0; color: var(--muted); line-height: 1.7; }
+.footer { padding: 34px; text-align: center; color: rgba(255,255,255,0.78); background: var(--navy); margin-top: 40px; }
+.toast { position: fixed; right: 20px; bottom: 20px; z-index: 99; padding: 14px 18px; border-radius: 999px; color: #fff; background: var(--ink); box-shadow: var(--shadow); font-weight: 900; }
+
+@media (max-width: 920px) {
+  .hero-grid, .grid.two, .steps { grid-template-columns: 1fr; }
+  .product-preview { min-width: 0; }
+  .row-heading { align-items: start; flex-direction: column; }
+  .nav { align-items: start; flex-direction: column; }
+  h1 { font-size: clamp(2.8rem, 14vw, 4.6rem); }
+}
+
+  </style>
+
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero" id="top">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="Procyon Touch home">
+          <span class="brand-symbol">✦</span>
+          <span class="brand-text">Procyon Touch</span>
+        </a>
+        <div class="nav-links">
+          <a href="#workflow">Workflow</a>
+          <a href="#homeowner-form">Homeowner</a>
+          <a href="#applicant-form">Applicant</a>
+          <a href="#dashboard">Dashboard</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <div class="hero-copy-block">
+          <p class="eyebrow">Housing-enabled aging tech</p>
+          <h1>Turn underused home space into income, stability, and practical presence.</h1>
+          <p class="hero-copy">
+            Procyon Touch is a presentation-ready MVP for structured live-in support and rent-exchange matching.
+            It demonstrates homeowner intake, applicant intake, compatibility scoring, and an admin review workflow.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#homeowner-form">Add homeowner</a>
+            <a class="button secondary" href="#applicant-form">Add applicant</a>
+            <button class="button ghost" type="button" id="heroSeedButton">Load demo data</button>
+          </div>
+          <div class="hero-metrics" aria-label="Demo assumptions">
+            <span><strong>$300</strong> prorated demo rent</span>
+            <span><strong>100</strong> point match score</span>
+            <span><strong>Local</strong> browser prototype</span>
+          </div>
+        </div>
+
+        <aside class="product-preview" aria-label="Product preview">
+          <div class="preview-topline">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="preview-panel main-panel">
+            <div>
+              <p class="mini-label">Live match review</p>
+              <h2>Northwest Philadelphia</h2>
+            </div>
+            <div class="score-orb">88</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-card">
+              <p class="mini-label">Homeowner</p>
+              <strong>Room + presence</strong>
+              <span>Prorated $300</span>
+            </div>
+            <div class="preview-card">
+              <p class="mini-label">Applicant</p>
+              <strong>Screened fit</strong>
+              <span>Skills + schedule</span>
+            </div>
+          </div>
+          <div class="pathway" aria-hidden="true">
+            <span>Intake</span>
+            <span>Screen</span>
+            <span>Match</span>
+            <span>Review</span>
+          </div>
+        </aside>
+      </section>
+    </header>
+
+    <main>
+      <section class="section statement" aria-label="Positioning statement">
+        <div class="statement-card">
+          <p class="eyebrow">Positioning</p>
+          <h2>Papa sends help to the home. Procyon Touch makes the home part of the support system.</h2>
+          <p>
+            This MVP is care-adjacent, not clinical. It coordinates housing, documentation, household expectations,
+            and practical presence. It is not a medical, emergency-response, or home-care agency workflow.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="workflow">
+        <div class="section-heading centered">
+          <p class="eyebrow">Prototype workflow</p>
+          <h2>From intake to reviewable match</h2>
+          <p>The product loop is simple enough to demo and structured enough to discuss with investors.</p>
+        </div>
+        <div class="steps">
+          <article>
+            <span class="step-number">01</span>
+            <h3>Homeowner intake</h3>
+            <p>Room terms, prorated rent, support needs, accessibility notes, pets, and household expectations.</p>
+          </article>
+          <article>
+            <span class="step-number">02</span>
+            <h3>Applicant intake</h3>
+            <p>Budget, preferred neighborhoods, availability, skills, transportation, and screening consent.</p>
+          </article>
+          <article>
+            <span class="step-number">03</span>
+            <h3>Human review</h3>
+            <p>Directional match scores with plain-English reasons for the founder or operator to review.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section form-section" id="homeowner-form" aria-labelledby="homeowner-title">
+        <div class="section-heading">
+          <p class="eyebrow">Intake 01</p>
+          <h2 id="homeowner-title">Homeowner intake</h2>
+          <p>Use mock data only. This prototype stores information in your browser, not on a secure server.</p>
+        </div>
+
+        <form id="homeownerForm" class="card form-card">
+          <div class="grid two">
+            <label>Name
+              <input name="name" required placeholder="Jane Homeowner" />
+            </label>
+            <label>Neighborhood
+              <input name="neighborhood" required placeholder="Mount Airy" />
+            </label>
+            <label>City
+              <input name="city" required placeholder="Philadelphia" value="Philadelphia" />
+            </label>
+            <label>Prorated rent amount
+              <input name="rentAmount" required type="number" min="0" step="25" placeholder="300" value="300" />
+            </label>
+            <label>Room type
+              <select name="roomType" required>
+                <option value="Private room">Private room</option>
+                <option value="Private room + bath">Private room + bath</option>
+                <option value="Basement suite">Basement suite</option>
+                <option value="Attic suite">Attic suite</option>
+              </select>
+            </label>
+            <label>Accessibility / home notes
+              <input name="accessibility" placeholder="Stairs, mobility, quiet hours, laundry access" />
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Support needs</legend>
+            <div class="chips">
+              <label><input type="checkbox" name="supportNeeds" value="errands" /> Errands</label>
+              <label><input type="checkbox" name="supportNeeds" value="transport" /> Transport</label>
+              <label><input type="checkbox" name="supportNeeds" value="meal prep" /> Meal prep</label>
+              <label><input type="checkbox" name="supportNeeds" value="light housekeeping" /> Light housekeeping</label>
+              <label><input type="checkbox" name="supportNeeds" value="tech help" /> Tech help</label>
+              <label><input type="checkbox" name="supportNeeds" value="companionship" /> Companionship</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Household details</legend>
+            <div class="grid two compact">
+              <label class="check"><input type="checkbox" name="hasPets" /> Pets in home</label>
+              <label class="check"><input type="checkbox" name="smokeFree" checked /> Smoke-free home</label>
+              <label class="check"><input type="checkbox" name="overnightPresence" /> Overnight presence preferred</label>
+              <label class="check"><input type="checkbox" name="backgroundRequired" checked /> Background check required</label>
+            </div>
+          </fieldset>
+
+          <label>Household expectations / notes
+            <textarea name="rules" rows="4" placeholder="Quiet hours, shared spaces, guests, parking, laundry, pets, boundaries..."></textarea>
+          </label>
+
+          <button class="button primary" type="submit">Save homeowner</button>
+        </form>
+      </section>
+
+      <section class="section form-section" id="applicant-form" aria-labelledby="applicant-title">
+        <div class="section-heading">
+          <p class="eyebrow">Intake 02</p>
+          <h2 id="applicant-title">Applicant intake</h2>
+          <p>Describe a potential live-in resident/support participant. This is a demo, not an approval process.</p>
+        </div>
+
+        <form id="applicantForm" class="card form-card">
+          <div class="grid two">
+            <label>Name
+              <input name="name" required placeholder="Alex Applicant" />
+            </label>
+            <label>City
+              <input name="city" required placeholder="Philadelphia" value="Philadelphia" />
+            </label>
+            <label>Monthly budget
+              <input name="budget" required type="number" min="0" step="25" placeholder="500" />
+            </label>
+            <label>Preferred neighborhoods
+              <input name="desiredNeighborhoods" required placeholder="Mount Airy, Chestnut Hill, Germantown" />
+            </label>
+            <label>Availability
+              <select name="availability" required>
+                <option value="evenings">Evenings</option>
+                <option value="overnights">Overnights</option>
+                <option value="weekends">Weekends</option>
+                <option value="flexible">Flexible</option>
+              </select>
+            </label>
+            <label>Transportation
+              <select name="transportation" required>
+                <option value="public transit">Public transit</option>
+                <option value="car">Car</option>
+                <option value="bike/walk">Bike/walk</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Skills / comfort areas</legend>
+            <div class="chips">
+              <label><input type="checkbox" name="skills" value="errands" /> Errands</label>
+              <label><input type="checkbox" name="skills" value="transport" /> Transport</label>
+              <label><input type="checkbox" name="skills" value="meal prep" /> Meal prep</label>
+              <label><input type="checkbox" name="skills" value="light housekeeping" /> Light housekeeping</label>
+              <label><input type="checkbox" name="skills" value="tech help" /> Tech help</label>
+              <label><input type="checkbox" name="skills" value="companionship" /> Companionship</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Screening alignment</legend>
+            <div class="grid two compact">
+              <label class="check"><input type="checkbox" name="petComfort" /> Comfortable with pets</label>
+              <label class="check"><input type="checkbox" name="smokeFreeOk" checked /> OK with smoke-free home</label>
+              <label class="check"><input type="checkbox" name="overnightOk" /> Open to overnight presence</label>
+              <label class="check"><input type="checkbox" name="backgroundConsent" /> Background-check consent</label>
+            </div>
+          </fieldset>
+
+          <label>Applicant notes
+            <textarea name="notes" rows="4" placeholder="Schedule constraints, references, experience, boundaries..."></textarea>
+          </label>
+
+          <button class="button primary" type="submit">Save applicant</button>
+        </form>
+      </section>
+
+      <section class="section dashboard" id="dashboard" aria-labelledby="dashboard-title">
+        <div class="section-heading row-heading">
+          <div>
+            <p class="eyebrow">Admin prototype</p>
+            <h2 id="dashboard-title">Matching dashboard</h2>
+            <p>Review stored profiles and compare possible live-in support/rent-exchange matches.</p>
+          </div>
+          <div class="dashboard-actions">
+            <button class="button secondary" id="seedDataButton" type="button">Load demo data</button>
+            <button class="button secondary" id="exportButton" type="button">Export JSON</button>
+            <button class="button danger" id="clearButton" type="button">Clear data</button>
+          </div>
+        </div>
+
+        <div class="grid two dashboard-grid">
+          <article class="card list-card">
+            <h3>Homeowners</h3>
+            <div id="homeownerList" class="record-list"></div>
+          </article>
+          <article class="card list-card">
+            <h3>Applicants</h3>
+            <div id="applicantList" class="record-list"></div>
+          </article>
+        </div>
+
+        <article class="card match-card">
+          <div class="match-heading">
+            <div>
+              <h3>Potential matches</h3>
+              <p>Scores are directional review aids, not acceptance decisions.</p>
+            </div>
+          </div>
+          <div id="matchList" class="match-list"></div>
+        </article>
+      </section>
+
+      <section class="section warning" aria-labelledby="limit-title">
+        <h2 id="limit-title">Prototype boundaries</h2>
+        <p>
+          This MVP is not a legal, medical, emergency-response, housing-compliance, or caregiving platform.
+          It is a product demonstration for intake, matching, documentation, and workflow thinking.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Procyon Touch MVP · Local browser prototype · Open <strong>index.html</strong>, not <strong>app.js</strong>.</p>
+    </footer>
+  </div>
+<script>
+/*
+  Procyon Touch presentation MVP
+  Open index.html in Chrome or Edge. Do not open app.js directly.
+*/
+
+(function () {
+  if (typeof WScript !== "undefined") {
+    WScript.Echo("Open index.html in Chrome or Edge. Do not open app.js directly.");
+    WScript.Quit();
+  }
+
+  if (typeof document === "undefined") return;
+
+  var STORAGE_KEYS = {
+    homeowners: "procyonTouch.presentation.homeowners",
+    applicants: "procyonTouch.presentation.applicants"
+  };
+
+  var homeownerForm = document.getElementById("homeownerForm");
+  var applicantForm = document.getElementById("applicantForm");
+  var homeownerList = document.getElementById("homeownerList");
+  var applicantList = document.getElementById("applicantList");
+  var matchList = document.getElementById("matchList");
+  var seedDataButton = document.getElementById("seedDataButton");
+  var heroSeedButton = document.getElementById("heroSeedButton");
+  var exportButton = document.getElementById("exportButton");
+  var clearButton = document.getElementById("clearButton");
+
+  function getRecords(key) {
+    var raw = localStorage.getItem(key);
+    if (!raw) return [];
+    try { return JSON.parse(raw); }
+    catch (error) { console.warn("Could not parse stored records", error); return []; }
+  }
+
+  function saveRecords(key, records) {
+    localStorage.setItem(key, JSON.stringify(records));
+  }
+
+  function getCheckedValues(form, name) {
+    var boxes = form.querySelectorAll('input[name="' + name + '"]:checked');
+    var values = [];
+    for (var i = 0; i < boxes.length; i += 1) values.push(boxes[i].value);
+    return values;
+  }
+
+  function getCheckbox(form, name) {
+    var input = form.querySelector('input[name="' + name + '"]');
+    return Boolean(input && input.checked);
+  }
+
+  function normalizeText(text) {
+    return String(text || "").trim().toLowerCase();
+  }
+
+  function normalizeList(text) {
+    var parts = String(text || "").split(",");
+    var cleaned = [];
+    for (var i = 0; i < parts.length; i += 1) {
+      var item = normalizeText(parts[i]);
+      if (item) cleaned.push(item);
+    }
+    return cleaned;
+  }
+
+  function makeId(prefix) {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return prefix + "-" + window.crypto.randomUUID();
+    }
+    return prefix + "-" + Date.now() + "-" + Math.floor(Math.random() * 100000);
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function showToast(message) {
+    var toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    window.setTimeout(function () { toast.remove(); }, 2400);
+  }
+
+  function collectHomeowner(form) {
+    var data = new FormData(form);
+    return {
+      id: makeId("homeowner"),
+      name: String(data.get("name") || "").trim(),
+      neighborhood: String(data.get("neighborhood") || "").trim(),
+      city: String(data.get("city") || "").trim(),
+      rentAmount: Number(data.get("rentAmount") || 0),
+      roomType: data.get("roomType"),
+      accessibility: String(data.get("accessibility") || "").trim(),
+      supportNeeds: getCheckedValues(form, "supportNeeds"),
+      hasPets: getCheckbox(form, "hasPets"),
+      smokeFree: getCheckbox(form, "smokeFree"),
+      overnightPresence: getCheckbox(form, "overnightPresence"),
+      backgroundRequired: getCheckbox(form, "backgroundRequired"),
+      rules: String(data.get("rules") || "").trim(),
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  function collectApplicant(form) {
+    var data = new FormData(form);
+    return {
+      id: makeId("applicant"),
+      name: String(data.get("name") || "").trim(),
+      city: String(data.get("city") || "").trim(),
+      budget: Number(data.get("budget") || 0),
+      desiredNeighborhoods: normalizeList(data.get("desiredNeighborhoods")),
+      availability: data.get("availability"),
+      transportation: data.get("transportation"),
+      skills: getCheckedValues(form, "skills"),
+      petComfort: getCheckbox(form, "petComfort"),
+      smokeFreeOk: getCheckbox(form, "smokeFreeOk"),
+      overnightOk: getCheckbox(form, "overnightOk"),
+      backgroundConsent: getCheckbox(form, "backgroundConsent"),
+      notes: String(data.get("notes") || "").trim(),
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  function countOverlap(listA, listB) {
+    var lookup = {};
+    var count = 0;
+    for (var i = 0; i < listA.length; i += 1) lookup[listA[i]] = true;
+    for (var j = 0; j < listB.length; j += 1) if (lookup[listB[j]]) count += 1;
+    return count;
+  }
+
+  function calculateMatch(homeowner, applicant) {
+    var score = 0;
+    var reasons = [];
+
+    if (applicant.budget >= homeowner.rentAmount) {
+      score += 25;
+      reasons.push("Budget covers prorated rent (+25).");
+    } else {
+      reasons.push("Budget is below prorated rent.");
+    }
+
+    var neighborhoodFit = applicant.desiredNeighborhoods.indexOf(normalizeText(homeowner.neighborhood)) !== -1;
+    if (neighborhoodFit) {
+      score += 20;
+      reasons.push("Neighborhood preference matches (+20).");
+    } else {
+      reasons.push("Neighborhood is not listed as a preference.");
+    }
+
+    var overlap = countOverlap(homeowner.supportNeeds, applicant.skills);
+    if (overlap > 0) {
+      var skillPoints = Math.min(25, overlap * 8);
+      score += skillPoints;
+      reasons.push(overlap + " support need(s) overlap (+" + skillPoints + ").");
+    } else {
+      reasons.push("No selected support-skill overlap.");
+    }
+
+    if (!homeowner.hasPets || applicant.petComfort) {
+      score += 10;
+      reasons.push("Pet situation is compatible (+10).");
+    } else {
+      reasons.push("Pet comfort needs review.");
+    }
+
+    if (!homeowner.overnightPresence || applicant.overnightOk || applicant.availability === "overnights" || applicant.availability === "flexible") {
+      score += 10;
+      reasons.push("Overnight/presence expectation is compatible (+10).");
+    } else {
+      reasons.push("Overnight/presence expectation needs review.");
+    }
+
+    if (!homeowner.smokeFree || applicant.smokeFreeOk) {
+      score += 5;
+      reasons.push("Smoke-free alignment (+5).");
+    } else {
+      reasons.push("Smoke-free alignment needs review.");
+    }
+
+    if (!homeowner.backgroundRequired || applicant.backgroundConsent) {
+      score += 5;
+      reasons.push("Screening consent aligns (+5).");
+    } else {
+      reasons.push("Background-check consent missing.");
+    }
+
+    return { score: Math.min(score, 100), reasons: reasons };
+  }
+
+  function formatNeeds(list) {
+    if (!list || !list.length) return "No support needs selected";
+    return list.join(", ");
+  }
+
+  function renderTags(values) {
+    if (!values || !values.length) return "";
+    var html = '<div class="tags">';
+    for (var i = 0; i < values.length; i += 1) html += '<span class="tag">' + escapeHtml(values[i]) + '</span>';
+    return html + "</div>";
+  }
+
+  function renderHomeowners(homeowners) {
+    if (!homeowners.length) {
+      homeownerList.innerHTML = '<div class="empty">No homeowners saved yet.</div>';
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < homeowners.length; i += 1) {
+      var h = homeowners[i];
+      html += '<div class="record"><header><div><strong>' + escapeHtml(h.name) + '</strong>' +
+        '<p class="meta">' + escapeHtml(h.neighborhood) + ', ' + escapeHtml(h.city) + ' · $' + escapeHtml(h.rentAmount) + '/month prorated · ' + escapeHtml(h.roomType) + '</p></div>' +
+        '<button class="delete-button" type="button" data-type="homeowner" data-id="' + escapeHtml(h.id) + '" aria-label="Delete homeowner">×</button></header>' +
+        '<p class="meta">Needs: ' + escapeHtml(formatNeeds(h.supportNeeds)) + '</p>' +
+        renderTags([h.hasPets ? "pets" : "no pets listed", h.smokeFree ? "smoke-free" : "not smoke-free", h.overnightPresence ? "overnight preferred" : "overnight not required", h.backgroundRequired ? "background required" : "background optional"]) + '</div>';
+    }
+    homeownerList.innerHTML = html;
+  }
+
+  function renderApplicants(applicants) {
+    if (!applicants.length) {
+      applicantList.innerHTML = '<div class="empty">No applicants saved yet.</div>';
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < applicants.length; i += 1) {
+      var a = applicants[i];
+      html += '<div class="record"><header><div><strong>' + escapeHtml(a.name) + '</strong>' +
+        '<p class="meta">' + escapeHtml(a.city) + ' · budget $' + escapeHtml(a.budget) + '/month · ' + escapeHtml(a.availability) + '</p></div>' +
+        '<button class="delete-button" type="button" data-type="applicant" data-id="' + escapeHtml(a.id) + '" aria-label="Delete applicant">×</button></header>' +
+        '<p class="meta">Neighborhoods: ' + escapeHtml(a.desiredNeighborhoods.join(", ")) + '</p>' +
+        renderTags(a.skills.concat([a.petComfort ? "pet comfortable" : "pet comfort unknown", a.backgroundConsent ? "screening consent" : "no screening consent"])) + '</div>';
+    }
+    applicantList.innerHTML = html;
+  }
+
+  function renderMatches(homeowners, applicants) {
+    if (!homeowners.length || !applicants.length) {
+      matchList.innerHTML = '<div class="empty">Add at least one homeowner and one applicant to generate match scores.</div>';
+      return;
+    }
+    var matches = [];
+    for (var i = 0; i < homeowners.length; i += 1) {
+      for (var j = 0; j < applicants.length; j += 1) {
+        var result = calculateMatch(homeowners[i], applicants[j]);
+        matches.push({ homeowner: homeowners[i], applicant: applicants[j], score: result.score, reasons: result.reasons });
+      }
+    }
+    matches.sort(function (a, b) { return b.score - a.score; });
+    var html = "";
+    for (var k = 0; k < matches.length; k += 1) {
+      var m = matches[k];
+      html += '<div class="match-result"><header><div><strong>' + escapeHtml(m.homeowner.name) + ' ↔ ' + escapeHtml(m.applicant.name) + '</strong>' +
+        '<p class="meta">' + escapeHtml(m.homeowner.neighborhood) + ' · ' + escapeHtml(m.homeowner.roomType) + '</p></div>' +
+        '<span class="score">' + escapeHtml(m.score) + '/100</span></header><ul class="reasons">';
+      for (var r = 0; r < m.reasons.length; r += 1) html += '<li>' + escapeHtml(m.reasons[r]) + '</li>';
+      html += '</ul></div>';
+    }
+    matchList.innerHTML = html;
+  }
+
+  function render() {
+    var homeowners = getRecords(STORAGE_KEYS.homeowners);
+    var applicants = getRecords(STORAGE_KEYS.applicants);
+    renderHomeowners(homeowners);
+    renderApplicants(applicants);
+    renderMatches(homeowners, applicants);
+  }
+
+  function deleteRecord(type, id) {
+    var key = type === "homeowner" ? STORAGE_KEYS.homeowners : STORAGE_KEYS.applicants;
+    var records = getRecords(key).filter(function (record) { return record.id !== id; });
+    saveRecords(key, records);
+    render();
+  }
+
+  function loadSampleData() {
+    var homeowners = [
+      {
+        id: makeId("homeowner"),
+        name: "Marian K.",
+        neighborhood: "Chestnut Hill",
+        city: "Philadelphia",
+        rentAmount: 300,
+        roomType: "Private room",
+        accessibility: "Two-story home; quiet evenings; shared laundry",
+        supportNeeds: ["errands", "tech help", "companionship"],
+        hasPets: true,
+        smokeFree: true,
+        overnightPresence: true,
+        backgroundRequired: true,
+        rules: "No smoking. Guests by agreement. Shared kitchen and laundry.",
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: makeId("homeowner"),
+        name: "Eleanor S.",
+        neighborhood: "Mount Airy",
+        city: "Philadelphia",
+        rentAmount: 300,
+        roomType: "Private room + bath",
+        accessibility: "First-floor room; needs help with occasional errands",
+        supportNeeds: ["errands", "meal prep", "light housekeeping"],
+        hasPets: false,
+        smokeFree: true,
+        overnightPresence: false,
+        backgroundRequired: true,
+        rules: "Quiet home. No overnight guests without prior agreement.",
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    var applicants = [
+      {
+        id: makeId("applicant"),
+        name: "Alex R.",
+        city: "Philadelphia",
+        budget: 500,
+        desiredNeighborhoods: ["chestnut hill", "mount airy", "germantown"],
+        availability: "flexible",
+        transportation: "mixed",
+        skills: ["errands", "tech help", "companionship"],
+        petComfort: true,
+        smokeFreeOk: true,
+        overnightOk: true,
+        backgroundConsent: true,
+        notes: "Comfortable with pets and light support expectations.",
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: makeId("applicant"),
+        name: "Taylor M.",
+        city: "Philadelphia",
+        budget: 425,
+        desiredNeighborhoods: ["mount airy", "west oak lane"],
+        availability: "evenings",
+        transportation: "public transit",
+        skills: ["meal prep", "light housekeeping"],
+        petComfort: false,
+        smokeFreeOk: true,
+        overnightOk: false,
+        backgroundConsent: true,
+        notes: "Prefers transit-accessible homes and clear house rules.",
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    saveRecords(STORAGE_KEYS.homeowners, homeowners);
+    saveRecords(STORAGE_KEYS.applicants, applicants);
+    render();
+    showToast("Demo data loaded.");
+  }
+
+  function exportJson() {
+    var payload = {
+      exportedAt: new Date().toISOString(),
+      homeowners: getRecords(STORAGE_KEYS.homeowners),
+      applicants: getRecords(STORAGE_KEYS.applicants)
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "procyon-touch-export.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast("JSON export created.");
+  }
+
+  function clearData() {
+    if (!window.confirm("Clear all local prototype data?")) return;
+    localStorage.removeItem(STORAGE_KEYS.homeowners);
+    localStorage.removeItem(STORAGE_KEYS.applicants);
+    render();
+    showToast("Prototype data cleared.");
+  }
+
+  homeownerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var homeowners = getRecords(STORAGE_KEYS.homeowners);
+    homeowners.push(collectHomeowner(homeownerForm));
+    saveRecords(STORAGE_KEYS.homeowners, homeowners);
+    homeownerForm.reset();
+    homeownerForm.elements.city.value = "Philadelphia";
+    homeownerForm.elements.rentAmount.value = "300";
+    homeownerForm.elements.smokeFree.checked = true;
+    homeownerForm.elements.backgroundRequired.checked = true;
+    render();
+    showToast("Homeowner saved.");
+  });
+
+  applicantForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var applicants = getRecords(STORAGE_KEYS.applicants);
+    applicants.push(collectApplicant(applicantForm));
+    saveRecords(STORAGE_KEYS.applicants, applicants);
+    applicantForm.reset();
+    applicantForm.elements.city.value = "Philadelphia";
+    applicantForm.elements.smokeFreeOk.checked = true;
+    render();
+    showToast("Applicant saved.");
+  });
+
+  document.addEventListener("click", function (event) {
+    var target = event.target;
+    if (!target || !target.matches || !target.matches(".delete-button")) return;
+    deleteRecord(target.getAttribute("data-type"), target.getAttribute("data-id"));
+    showToast("Record deleted.");
+  });
+
+  seedDataButton.addEventListener("click", loadSampleData);
+  heroSeedButton.addEventListener("click", loadSampleData);
+  exportButton.addEventListener("click", exportJson);
+  clearButton.addEventListener("click", clearData);
+
+  render();
+}());
+
+</script>
+</body>
+</html>
