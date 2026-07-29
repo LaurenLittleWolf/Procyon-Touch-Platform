@@ -643,8 +643,13 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
   function getRecords(key) {
     var raw = localStorage.getItem(key);
     if (!raw) return [];
-    try { return JSON.parse(raw); }
-    catch (error) { console.warn("Could not parse stored records", error); return []; }
+    try {
+      var records = JSON.parse(raw);
+      return Array.isArray(records) ? records : [];
+    } catch (error) {
+      console.warn("Could not parse stored records", error);
+      return [];
+    }
   }
 
   function saveRecords(key, records) {
@@ -685,7 +690,7 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
   }
 
   function escapeHtml(value) {
-    return String(value || "")
+    return String(value === null || value === undefined ? "" : value)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -741,26 +746,59 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
     };
   }
 
+  function safeArray(value) {
+    return Array.isArray(value) ? value : [];
+  }
+
   function countOverlap(listA, listB) {
     var lookup = {};
+    var matched = {};
     var count = 0;
-    for (var i = 0; i < listA.length; i += 1) lookup[listA[i]] = true;
-    for (var j = 0; j < listB.length; j += 1) if (lookup[listB[j]]) count += 1;
+    var left = safeArray(listA);
+    var right = safeArray(listB);
+
+    for (var i = 0; i < left.length; i += 1) {
+      var leftKey = normalizeText(left[i]);
+      if (leftKey) lookup[leftKey] = true;
+    }
+
+    for (var j = 0; j < right.length; j += 1) {
+      var rightKey = normalizeText(right[j]);
+      if (rightKey && lookup[rightKey] && !matched[rightKey]) {
+        matched[rightKey] = true;
+        count += 1;
+      }
+    }
+
     return count;
   }
 
   function calculateMatch(homeowner, applicant) {
+    homeowner = homeowner || {};
+    applicant = applicant || {};
+
     var score = 0;
     var reasons = [];
+    var reviewFlags = [];
+    var budget = Number(applicant.budget);
+    var rentAmount = Number(homeowner.rentAmount);
+    var validBudgetData = Number.isFinite(budget) && Number.isFinite(rentAmount);
 
-    if (applicant.budget >= homeowner.rentAmount) {
+    if (validBudgetData && budget >= rentAmount) {
       score += 25;
       reasons.push("Budget covers prorated rent (+25).");
+    } else if (!validBudgetData) {
+      reasons.push("Budget or prorated rent is missing or invalid.");
+      reviewFlags.push("Budget data");
     } else {
       reasons.push("Budget is below prorated rent.");
+      reviewFlags.push("Budget mismatch");
     }
 
-    var neighborhoodFit = applicant.desiredNeighborhoods.indexOf(normalizeText(homeowner.neighborhood)) !== -1;
+    var desiredNeighborhoods = safeArray(applicant.desiredNeighborhoods).map(normalizeText);
+    var homeownerNeighborhood = normalizeText(homeowner.neighborhood);
+    var neighborhoodFit = Boolean(homeownerNeighborhood && desiredNeighborhoods.indexOf(homeownerNeighborhood) !== -1);
+
     if (neighborhoodFit) {
       score += 20;
       reasons.push("Neighborhood preference matches (+20).");
@@ -775,37 +813,52 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
       reasons.push(overlap + " support need(s) overlap (+" + skillPoints + ").");
     } else {
       reasons.push("No selected support-skill overlap.");
+      reviewFlags.push("No support-skill overlap");
     }
 
-    if (!homeowner.hasPets || applicant.petComfort) {
+    if (!homeowner.hasPets || applicant.petComfort === true) {
       score += 10;
       reasons.push("Pet situation is compatible (+10).");
     } else {
       reasons.push("Pet comfort needs review.");
+      reviewFlags.push("Pet compatibility");
     }
 
-    if (!homeowner.overnightPresence || applicant.overnightOk || applicant.availability === "overnights" || applicant.availability === "flexible") {
+    var presenceCompatible = !homeowner.overnightPresence ||
+      applicant.overnightOk === true ||
+      applicant.availability === "overnights" ||
+      applicant.availability === "flexible";
+
+    if (presenceCompatible) {
       score += 10;
       reasons.push("Overnight/presence expectation is compatible (+10).");
     } else {
       reasons.push("Overnight/presence expectation needs review.");
+      reviewFlags.push("Overnight presence");
     }
 
-    if (!homeowner.smokeFree || applicant.smokeFreeOk) {
+    if (!homeowner.smokeFree || applicant.smokeFreeOk === true) {
       score += 5;
       reasons.push("Smoke-free alignment (+5).");
     } else {
       reasons.push("Smoke-free alignment needs review.");
+      reviewFlags.push("Smoke-free requirement");
     }
 
-    if (!homeowner.backgroundRequired || applicant.backgroundConsent) {
+    if (!homeowner.backgroundRequired || applicant.backgroundConsent === true) {
       score += 5;
       reasons.push("Screening consent aligns (+5).");
     } else {
       reasons.push("Background-check consent missing.");
+      reviewFlags.push("Background-check consent");
     }
 
-    return { score: Math.min(score, 100), reasons: reasons };
+    return {
+      score: Math.min(score, 100),
+      reasons: reasons,
+      reviewFlags: reviewFlags,
+      requiresReview: reviewFlags.length > 0
+    };
   }
 
   function formatNeeds(list) {
@@ -848,8 +901,8 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
       html += '<div class="record"><header><div><strong>' + escapeHtml(a.name) + '</strong>' +
         '<p class="meta">' + escapeHtml(a.city) + ' · budget $' + escapeHtml(a.budget) + '/month · ' + escapeHtml(a.availability) + '</p></div>' +
         '<button class="delete-button" type="button" data-type="applicant" data-id="' + escapeHtml(a.id) + '" aria-label="Delete applicant">×</button></header>' +
-        '<p class="meta">Neighborhoods: ' + escapeHtml(a.desiredNeighborhoods.join(", ")) + '</p>' +
-        renderTags(a.skills.concat([a.petComfort ? "pet comfortable" : "pet comfort unknown", a.backgroundConsent ? "screening consent" : "no screening consent"])) + '</div>';
+        '<p class="meta">Neighborhoods: ' + escapeHtml(safeArray(a.desiredNeighborhoods).join(", ")) + '</p>' +
+        renderTags(safeArray(a.skills).concat([a.petComfort ? "pet comfortable" : "pet comfort unknown", a.backgroundConsent ? "screening consent" : "no screening consent"])) + '</div>';
     }
     applicantList.innerHTML = html;
   }
@@ -863,7 +916,7 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
     for (var i = 0; i < homeowners.length; i += 1) {
       for (var j = 0; j < applicants.length; j += 1) {
         var result = calculateMatch(homeowners[i], applicants[j]);
-        matches.push({ homeowner: homeowners[i], applicant: applicants[j], score: result.score, reasons: result.reasons });
+        matches.push({ homeowner: homeowners[i], applicant: applicants[j], score: result.score, reasons: result.reasons, reviewFlags: safeArray(result.reviewFlags), requiresReview: result.requiresReview });
       }
     }
     matches.sort(function (a, b) { return b.score - a.score; });
@@ -874,7 +927,11 @@ legend { padding: 0 8px; color: var(--ink); font-weight: 900; }
         '<p class="meta">' + escapeHtml(m.homeowner.neighborhood) + ' · ' + escapeHtml(m.homeowner.roomType) + '</p></div>' +
         '<span class="score">' + escapeHtml(m.score) + '/100</span></header><ul class="reasons">';
       for (var r = 0; r < m.reasons.length; r += 1) html += '<li>' + escapeHtml(m.reasons[r]) + '</li>';
-      html += '</ul></div>';
+      html += '</ul>';
+      if (m.reviewFlags.length) {
+        html += '<p class="meta"><strong>Review flags:</strong> ' + escapeHtml(m.reviewFlags.join(", ")) + '</p>';
+      }
+      html += '</div>';
     }
     matchList.innerHTML = html;
   }
